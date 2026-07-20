@@ -59,7 +59,7 @@ services:
     container_name: dashy
     restart: unless-stopped
     ports:
-      - "8080:8080"
+      - "8082:8080"
     volumes:
       - ./user-data:/app/user-data
     environment:
@@ -72,7 +72,7 @@ networks:
     external: true
 ```
 
-> **PENTING**: Dashy pakai port internal **8080**, bukan 80. Jangan diganti.
+> **Catatan Port**: Dashy pakai port internal **8080** (jangan diganti). Tapi host port kita pakai **8082** karena port 8080 sudah dipakai Pi-hole dari course sebelumnya.
 
 4. Buat file konfigurasi awal `user-data/conf.yml`:
 
@@ -144,7 +144,7 @@ Output:
 1. Buka browser:
 
 ```
-http://<IP_PUBLIK_ATAU_TAILSCALE>:8080
+http://<IP_PUBLIK_ATAU_TAILSCALE>:8082
 ```
 
 2. Tunggu 30-60 detik — Dashy sedang build asset pertama kali
@@ -199,7 +199,7 @@ docker ps | grep dashy
 docker logs dashy --tail 20
 ```
 
-Buka `http://<IP_PUBLIK_ATAU_TAILSCALE>:8080` — dashboard harus muncul dengan service-service yang terdaftar.
+Buka `http://<IP_PUBLIK_ATAU_TAILSCALE>:8082` — dashboard harus muncul dengan service-service yang terdaftar.
 
 ## Hasil Akhir
 

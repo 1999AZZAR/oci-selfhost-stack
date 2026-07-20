@@ -30,11 +30,7 @@ Semua aman — tidak ada port terbuka di firewall.
 | Uptime Kuma | `3001` | `uptime-kuma` |
 | Dashy | `8080` | `dashy` |
 
-Kalau ada Pi-hole dari kursus sebelumnya:
-
-| Service | Port Internal | Nama Container |
-| --- | --- | --- |
-| Pi-hole | `80` | `pihole` |
+Pi-hole dari kursus sebelumnya — port internal `80`, container name `pihole`. Tapi Pi-hole masih di **default Docker bridge**, belum di `proxy-net`. Kita akan hubungkan nanti.
 
 ### 2. Pastikan Container Satu Network
 
@@ -46,24 +42,36 @@ Cek network yang ada:
 docker network ls
 ```
 
-Kalau `proxy-net` belum ada, buat:
+Harusnya sudah ada `proxy-net` dari kursus domain sebelumnya. Kalau belum:
 
 ```bash
 docker network create proxy-net
 ```
 
-Hubungkan CasaOS ke `proxy-net`:
+#### CasaOS
+
+CasaOS punya network sendiri (`casaos`). Jangan lepaskan. Cukup tambah `proxy-net`:
 
 ```bash
 docker network connect proxy-net casaos-gateway
 ```
 
-> **Catatan**: CasaOS sebenarnya punya network sendiri (`casaos`). Jangan lepaskan CasaOS dari network itu. Cukup tambah `proxy-net` sebagai network kedua.
+#### Pi-hole (Penting!)
 
-Kalau Uptime Kuma atau Dashy diinstall manual (bukan via CasaOS), compose.yaml mereka sudah include `proxy-net`. Tapi kalau via CasaOS App Store, mereka mungkin tidak terhubung. Cara ngecek:
+Pi-hole dari course sebelumnya berjalan di **default bridge** network, bukan `proxy-net`. Hubungkan:
 
 ```bash
-docker inspect uptime-kuma | grep -A 10 "Networks"
+docker network connect proxy-net pihole
+```
+
+> **Kenapa?** cloudflared ada di `proxy-net`. Kalau Pi-hole tidak di `proxy-net`, tunnel nggak bisa akses `http://pihole:80`.
+
+#### Uptime Kuma & Dashy
+
+Kalau diinstall via CasaOS App Store, cek dulu:
+
+```bash
+docker inspect uptime-kuma | grep -A 5 "Networks"
 ```
 
 Kalau tidak ada `proxy-net`, hubungkan:
@@ -72,6 +80,8 @@ Kalau tidak ada `proxy-net`, hubungkan:
 docker network connect proxy-net uptime-kuma
 docker network connect proxy-net dashy
 ```
+
+Kalau diinstall manual via compose, mereka sudah include `proxy-net` — tidak perlu.
 
 ### 3. Tambah Ingress di Dashboard Cloudflare
 
@@ -117,6 +127,8 @@ Klik **Add a public hostname** lagi:
 | URL | `http://dashy:8080` |
 
 Klik **Save hostname**.
+
+> **Catatan**: Port internal Dashy di container adalah `8080`, bukan `80`. Tunnel akses via `dashy:8080` (nama container), bukan `8082` (host port). Port host cuma dipakai kalau akses langsung via IP.
 
 #### Pi-hole (Kalau Ada)
 

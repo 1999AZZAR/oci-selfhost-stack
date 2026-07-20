@@ -8,6 +8,7 @@ Pasang CasaOS di OCI Always Free dan ubah server jadi dashboard visual: file man
 Browser → Cloudflare Tunnel → cloudflared (OCI)
                                 ├── casaos.example.com   → CasaOS :81
                                 ├── dashy.example.com    → Dashy :8080
+                                ├── pihole.example.com  → Pi-hole :80
                                 ├── uptime.example.com   → Uptime Kuma :3001
                                 └── portainer.example.com → Portainer :9000
 ```

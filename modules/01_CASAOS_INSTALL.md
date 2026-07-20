@@ -7,6 +7,8 @@ CasaOS mengubah terminal server OCI jadi dashboard visual. Dari sini kamu bisa i
 CasaOS secara default menggunakan port **80**. Tapi di server OCI kita, port 80 sudah dipakai oleh **Caddy** (web server dari kursus sebelumnya). Jadi kita harus ganti port CasaOS ke **81** setelah install.
 
 > **Catatan**: Kalau belum punya Caddy di server, port 80 aman. Tapi karena kursus ini lanjutan dari oci-domain-cloudflare, Caddy pasti sudah jalan.
+>
+> **Catatan Tambahan**: `systemd-resolved` sudah dinonaktifkan dari course Pi-hole sebelumnya. Ini tidak masalah untuk CasaOS.
 
 ## Langkah
 
