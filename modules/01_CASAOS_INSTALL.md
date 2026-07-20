@@ -2,32 +2,103 @@
 
 CasaOS mengubah terminal server OCI jadi dashboard visual. Dari sini kamu bisa install aplikasi, manage file, dan lihat status server — semua dari browser.
 
-## Cara Kerja
+## Penting: Masalah Port 80
 
-```
-Browser → <IP_SERVER>:81 → CasaOS UI
-```
+CasaOS secara default menggunakan port **80**. Tapi di server OCI kita, port 80 sudah dipakai oleh **Caddy** (web server dari kursus sebelumnya). Jadi kita harus ganti port CasaOS ke **81** setelah install.
 
-Nanti di Modul 4 kita pasang tunnel biar aksesnya lewat domain + HTTPS.
+> **Catatan**: Kalau belum punya Caddy di server, port 80 aman. Tapi karena kursus ini lanjutan dari oci-domain-cloudflare, Caddy pasti sudah jalan.
 
 ## Langkah
 
-### 1. Install CasaOS
+### 1. SSH ke Server
 
-SSH ke server OCI:
+```bash
+ssh user@server-oci
+```
+
+### 2. Install CasaOS
+
+Jalankan perintah ini:
 
 ```bash
 curl -fsSL https://get.casaos.io | sudo bash
 ```
 
-Proses instalasi ~2-5 menit. Script akan:
-- Install Docker (jika belum ada)
-- Download & jalankan CasaOS container
-- Buka port 81 di iptables otomatis
+Proses instalasi sekitar 2-5 menit. Script akan:
+- Install Docker jika belum ada — CasaOS butuh Docker
+- Download dan setup CasaOS
+- Membuka port 80 dan 81 di iptables
 
-> **Catatan**: CasaOS otomatis buka port 81 di iptables. Tapi ini hanya akses lokal via IP. Nanti akses publik via tunnel — jadi port 81 nggak perlu dibuka di Security List OCI.
+> **Jangan langsung akses CasaOS dulu.** Karena Caddy pakai port 80, kita harus ganti port CasaOS dulu.
 
-### 2. Akses CasaOS
+### 3. Cek Apakah CasaOS Berjalan
+
+```bash
+sudo systemctl status casaos-gateway
+```
+
+Kalau berjalan, output akan seperti:
+
+```
+● casaos-gateway.service - CasaOS Gateway
+     Loaded: loaded
+     Active: active (running)
+```
+
+Kalau ada error, tunggu 1 menit lalu coba lagi.
+
+Cek juga containernya:
+
+```bash
+docker ps | grep casaos
+```
+
+Harusnya ada 4 container:
+
+```
+casaos-gateway
+casaos-user-service
+casaos-app-management
+casaos-message-bus
+```
+
+### 4. Ganti Port CasaOS ke 81 (PENTING)
+
+Karena Caddy sudah pakai port 80, CasaOS harus dipindah.
+
+Buka file konfigurasi gateway:
+
+```bash
+sudo nano /etc/casaos/gateway.ini
+```
+
+Di dalam file, kamu akan lihat:
+
+```ini
+[gateway]
+port = 80
+```
+
+Ganti `port = 80` menjadi `port = 81`:
+
+```ini
+[gateway]
+port = 81
+```
+
+Simpan: tekan `Ctrl+X`, lalu `Y`, lalu `Enter`.
+
+
+
+Restart service CasaOS:
+
+```bash
+sudo systemctl restart casaos-gateway
+```
+
+Sekarang CasaOS berjalan di port **81**.
+
+### 5. Akses CasaOS
 
 Cari IP server OCI:
 
@@ -35,48 +106,63 @@ Cari IP server OCI:
 hostname -I | awk '{print $1}'
 ```
 
-Buka browser: `http://<IP_SERVER>:81`
+Buka browser di laptop/PC kamu, ketik:
 
-Kamu akan lihat halaman setup CasaOS:
-- Buat username & password
-- Selesai — masuk ke dashboard
+```
+http://<IP_SERVER>:81
+```
 
-### 3. Jelajah Dashboard
+Contoh: `http://140.238.xx.xx:81`
 
-CasaOS punya beberapa bagian utama:
+Kamu akan melihat halaman setup CasaOS:
 
-| Menu | Fungsi |
+1. Buat **username** dan **password** — simpan baik-baik
+2. Klik **Submit**
+3. Selamat datang di dashboard CasaOS
+
+### 6. Jelajah Dashboard
+
+CasaOS punya beberapa bagian:
+
+| Bagian | Fungsi |
 | --- | --- |
-| **Dashboard** | Status server (CPU, RAM, disk) |
-| **File** | File manager — upload/download lewat browser |
-| **Apps** | App store — install aplikasi 1 klik |
-| **Settings** | Konfigurasi sistem |
+| **Dashboard** | Status server — CPU, RAM, disk, uptime |
+| **File** | File manager — upload/download file, mirip File Explorer |
+| **Apps** | App store — install aplikasi dengan 1 klik |
+| **Settings** | Konfigurasi system, update, network |
 
-### 4. Verifikasi
+### 7. Verifikasi
 
 ```bash
-# Cek container
+# Cek apakah container CasaOS berjalan normal
 docker ps | grep casaos
+
+# Cek port 81 sudah aktif
+curl -I http://localhost:81
 ```
 
-Output:
+Output `curl` harus seperti:
 
 ```
-casaos-gateway   Up X minutes   80/tcp, :81->81/tcp
-casaos-app-management  Up X minutes
-...
+HTTP/1.1 302 Found
+Location: /
 ```
 
-## Catatan
+> **Catatan**: Kalau `curl` error, restart service: `sudo systemctl restart casaos-gateway`
 
-- CasaOS jalan di port **81** (bukan 80/443). Ini sengaja biar nggak bentrok dengan Caddy
-- File manager CasaOS bisa akses seluruh filesystem server — hati-hati dengan izin file
-- App store berisi aplikasi-aplikasi yang sudah di-test untuk CasaOS
+## Troubleshooting
+
+| Masalah | Solusi |
+| --- | --- |
+| Port 81 tidak bisa diakses | Cek firewall: `sudo iptables -L INPUT -n | grep 81` |
+| Gagal akses dari browser | Pastikan pakai `http://`, bukan `https://` — CasaOS belum pakai SSL |
+| Container restart terus | `docker logs casaos-gateway` — cek error |
 
 ## Hasil Akhir
 
-- [ ] CasaOS terinstall dan bisa diakses via `http://<IP>:81`
-- [ ] Dashboard menampilkan status server
+- [ ] CasaOS terinstall dan berjalan
+- [ ] Port sudah diganti ke 81 (tidak bentrok dengan Caddy)
+- [ ] Dashboard bisa diakses via `http://<IP>:81`
 - [ ] Siap install aplikasi pendukung
 
 ## Berikutnya
