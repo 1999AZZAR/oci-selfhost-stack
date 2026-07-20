@@ -21,7 +21,7 @@ Kamu bisa pilih salah satu:
 
 ## Opsi A: Via CasaOS App Store (Termudah)
 
-1. Buka CasaOS dashboard di `http://<IP>:81`
+1. Buka CasaOS dashboard di `http://<IP_PUBLIK_ATAU_TAILSCALE>:81`
 2. Klik menu **Apps** di kiri
 3. Klik **App Store**
 4. Cari "Uptime Kuma" di kolom pencarian
@@ -90,6 +90,8 @@ Output:
 
 > **Catatan**: `:2` di image artinya versi 2.x terbaru. Jangan pakai `:latest` karena sudah deprecated (tidak disarankan oleh developer).
 
+> **Cara dapat IP server**: `curl -4 ifconfig.me` (IP publik) atau `tailscale ip -4` (IP Tailscale).
+
 ---
 
 ## Setup Awal
@@ -97,7 +99,7 @@ Output:
 1. Buka browser, akses:
 
 ```
-http://<IP_SERVER>:3001
+http://<IP_PUBLIK_ATAU_TAILSCALE>:3001
 ```
 
 Contoh: `http://140.238.xx.xx:3001`
@@ -170,7 +172,7 @@ docker ps | grep uptime-kuma
 docker logs uptime-kuma --tail 10
 ```
 
-Buka browser ke `http://<IP>:3001` — dashboard harus muncul dengan monitor yang sudah ditambah.
+Buka browser ke `http://<IP_PUBLIK_ATAU_TAILSCALE>:3001` — dashboard harus muncul dengan monitor yang sudah ditambah.
 
 ## Hasil Akhir
 

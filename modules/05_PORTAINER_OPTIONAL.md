@@ -67,7 +67,8 @@ Output:
 
 ## Setup Awal
 
-1. Buka browser: `http://<IP_SERVER>:9000`
+1. Cari IP server: `curl -4 ifconfig.me` (publik) atau `tailscale ip -4` (Tailscale)
+2. Buka browser: `http://<IP_PUBLIK_ATAU_TAILSCALE>:9000`
 2. Buat **password admin** — minimal 8 karakter, kuat
 3. Klik **Create user**
 4. Pilih **Local** → klik **Connect**

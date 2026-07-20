@@ -18,7 +18,7 @@ Browser → Dashy dashboard
 
 ## Opsi A: Via CasaOS App Store (Termudah)
 
-1. Buka CasaOS dashboard di `http://<IP>:81`
+1. Buka CasaOS dashboard di `http://<IP_PUBLIK_ATAU_TAILSCALE>:81`
 2. **Apps** → **App Store**
 3. Cari "Dashy"
 4. Klik **Install**
@@ -27,6 +27,8 @@ Browser → Dashy dashboard
 Dashy akan jalan setelah beberapa menit.
 
 > **Catatan**: Pertama kali jalan, Dashy butuh 30-60 detik untuk build asset. Jangan panik kalau halaman putih. Tunggu.
+>
+> **Cara dapat IP server**: `curl -4 ifconfig.me` (IP publik) atau `tailscale ip -4` (IP Tailscale).
 
 ---
 
@@ -142,7 +144,7 @@ Output:
 1. Buka browser:
 
 ```
-http://<IP_SERVER>:8080
+http://<IP_PUBLIK_ATAU_TAILSCALE>:8080
 ```
 
 2. Tunggu 30-60 detik — Dashy sedang build asset pertama kali
@@ -197,7 +199,7 @@ docker ps | grep dashy
 docker logs dashy --tail 20
 ```
 
-Buka `http://<IP>:8080` — dashboard harus muncul dengan service-service yang terdaftar.
+Buka `http://<IP_PUBLIK_ATAU_TAILSCALE>:8080` — dashboard harus muncul dengan service-service yang terdaftar.
 
 ## Hasil Akhir
 

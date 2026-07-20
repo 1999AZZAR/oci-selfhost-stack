@@ -100,19 +100,34 @@ Sekarang CasaOS berjalan di port **81**.
 
 ### 5. Akses CasaOS
 
-Cari IP server OCI:
+Kamu butuh alamat IP server OCI untuk akses dari browser. Ada dua cara:
+
+**Cara 1 — IP Publik (Akses dari mana saja)**
 
 ```bash
-hostname -I | awk '{print $1}'
+curl -4 ifconfig.me
 ```
+
+Output: `140.238.xx.xx`
+
+**Cara 2 — IP Tailscale (Akses dari device di mesh network)**
+
+```bash
+tailscale ip -4
+```
+
+Output: `100.xx.xx.xx`
+
+> **Catatan**: `hostname -I` tidak bisa dipakai karena hanya menampilkan IP internal OCI (10.x.x.x) yang tidak bisa diakses dari luar.
 
 Buka browser di laptop/PC kamu, ketik:
 
 ```
-http://<IP_SERVER>:81
+http://<IP_PUBLIK_ATAU_TAILSCALE>:81
 ```
 
-Contoh: `http://140.238.xx.xx:81`
+Contoh IP publik: `http://140.238.xx.xx:81`
+Contoh IP Tailscale: `http://100.xx.xx.xx:81`
 
 Kamu akan melihat halaman setup CasaOS:
 
@@ -162,7 +177,7 @@ Location: /
 
 - [ ] CasaOS terinstall dan berjalan
 - [ ] Port sudah diganti ke 81 (tidak bentrok dengan Caddy)
-- [ ] Dashboard bisa diakses via `http://<IP>:81`
+- [ ] Dashboard bisa diakses via `http://<IP_PUBLIK_ATAU_TAILSCALE>:81`
 - [ ] Siap install aplikasi pendukung
 
 ## Berikutnya
