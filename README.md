@@ -24,6 +24,8 @@ Kursus ini melanjutkan dari [oci-domain-cloudflare](https://github.com/1999AZZAR
 
 Belum punya? Selesaikan [kursus domain + tunnel](https://github.com/1999AZZAR/oci-domain-cloudflare) dulu.
 
+> **Catatan**: Jika sudah menyelesaikan [oci-pihole-adblock](https://github.com/1999AZZAR/oci-pihole-adblock), Pi-hole-mu juga bisa diintegrasikan di Dashy dan Uptime Kuma.
+
 ## Daftar Modul
 
 ### Fase 1: Foundation
